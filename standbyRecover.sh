@@ -1,7 +1,7 @@
 #!/bin/bash
 #############################################################
 # Author : Suman Adhikari                                  ##
-# Company : Nepasoft Solution                              ##
+# Fork   : Mariano Urroz                                   ##
 # Description : This script is developed for manual        ##
 #               Standby database configuration for         ##
 #               standard edition databases. It will        ##
@@ -19,8 +19,8 @@
 ## Set Oracle Specific Environmental env's
 ##
 export ORACLE_HOSTNAME=`hostname`
-export ORACLE_HOME=/u02/app/oracle/product/11.2.0.4/db_1
-#export ORACLE_SID="orcldr"
+export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
+export ORACLE_SID="PRDSTBYDB"
 DBMODE=""
 
 ##
@@ -37,8 +37,8 @@ CURSCRIPT=`readlink -f $0`
 ##
 ## Variables for generating logfiles 
 ##
-RECOVERY_LOG_DIR="/archive/syncstandby/diag"
-RECOVERY_ARCH_DIR="/archive/orcldr/"
+RECOVERY_LOG_DIR="/ub01/standbySync/log/"
+RECOVERY_ARCH_DIR="/ub01/standbySync/archives/"
 RSYNC_LOG_FILE=${RECOVERY_LOG_DIR}/alertRECOVER_${ORACLE_SID}.log
 RSYNC_START_TIME=""
 RSYNC_END_TIME=""
@@ -311,21 +311,48 @@ FunHandleSchedule(){
 ###
 ### Function to apply archived logs
 ###
+#FunApplyArchivelogs(){
+#ReportInfo "${2}" "Y"
+#${1}/bin/sqlplus / as sysdba >> /dev/null <<EOF >> ${RSYNC_LOG_FILE}
+#col "APPLY DATE and TIME" format a30
+#col "Finished DATE and TIME" format a30
+#SELECT TO_CHAR (SYSDATE, 'MM-DD-YYYY HH24:MI:SS') "APPLY DATE and TIME" FROM DUAL;
+#select name, open_mode, database_role from v\$database;
+#select 'Last Archive Sequence Applied : '||max(SEQUENCE#) "Archive Applied" from v\$log_history where thread#=1;
+#recover standby database 
+#AUTO
+#select 'Last Archive Sequence Applied : '||max(SEQUENCE#) "Archive Applied" from v\$log_history where thread#=1;
+#SELECT TO_CHAR (SYSDATE, 'MM-DD-YYYY HH24:MI:SS') "Finished DATE and TIME" FROM DUAL;
+#exit;
+#EOF
+#}
+
+###
+### Function to apply archived logs - Added by murroz (maneiiii)
+###
 FunApplyArchivelogs(){
 ReportInfo "${2}" "Y"
-${1}/bin/sqlplus / as sysdba >> /dev/null <<EOF >> ${RSYNC_LOG_FILE}
-col "APPLY DATE and TIME" format a30
-col "Finished DATE and TIME" format a30
-SELECT TO_CHAR (SYSDATE, 'MM-DD-YYYY HH24:MI:SS') "APPLY DATE and TIME" FROM DUAL;
-select name, open_mode, database_role from v\$database;
-select 'Last Archive Sequence Applied : '||max(SEQUENCE#) "Archive Applied" from v\$log_history where thread#=1;
-recover standby database
-AUTO
-select 'Last Archive Sequence Applied : '||max(SEQUENCE#) "Archive Applied" from v\$log_history where thread#=1;
-SELECT TO_CHAR (SYSDATE, 'MM-DD-YYYY HH24:MI:SS') "Finished DATE and TIME" FROM DUAL;
+${1}/bin/rman target / >> /dev/null <<EOF >> ${RSYNC_LOG_FILE}
+run {
+allocate channel c1 device type disk;
+recover database;
+}
 exit;
 EOF
 }
+
+###
+### Function to catalog archived logs - Added by murroz (maneiiii)
+###
+FunCatalogArchivelogs(){
+ReportInfo "${2}" "Y"
+${1}/bin/rman target / >> /dev/null <<EOF >> ${RSYNC_LOG_FILE}
+catalog start with '${RECOVERY_ARCH_DIR}' noprompt;
+exit;
+EOF
+}
+
+
 
 ###
 ### Function to apply the archives
@@ -340,7 +367,10 @@ FunGetDBmode ${ORACLE_HOME}
 		FunShutdownDB ${ORACLE_HOME} "i" "Shutting down Database instance ${ORACLE_SID} ....."
 		FunStartDB ${ORACLE_HOME} "m" "Opening Database instance ${ORACLE_SID} in mounted mode ...."
 	fi
+	FunCheckApplyStatus ${ORACLE_HOME}
+	FunCatalogArchivelogs ${ORACLE_HOME} "Cataloging Archive logs to Database instance ${ORACLE_SID} ....."
 	FunApplyArchivelogs ${ORACLE_HOME} "Applying Archive logs to Database instance ${ORACLE_SID} ....."
+	FunCheckApplyStatus ${ORACLE_HOME}
 }
 
 ###
@@ -348,7 +378,7 @@ FunGetDBmode ${ORACLE_HOME}
 ###
 FunCheckApplyStatus(){
 ReportInfo "Checking Sequence for Applied Archive Logs" "N"
-${1}/bin/sqlplus -s / as sysdba <<EOF 
+${1}/bin/sqlplus -s / as sysdba <<EOF >> ${RSYNC_LOG_FILE}
 col "Current DATE and TIME" format a30
 col "Finished DATE and TIME" format a30
 SELECT TO_CHAR (SYSDATE, 'MM-DD-YYYY HH24:MI:SS') "Current DATE and TIME" FROM DUAL;
