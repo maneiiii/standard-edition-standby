@@ -2,6 +2,7 @@
 
 ## Some info:
 Author: Suman Adhikari
+Fork:   Mariano Urroz
 
 ## Description:
 This projects lists the scripts for how to create a duplicate(clone) database of production DB in standard edition which supports the following features of (physical)standby in Enterprise Edition. 
