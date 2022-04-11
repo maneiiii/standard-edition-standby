@@ -20,7 +20,7 @@
 ##
 export ORACLE_HOSTNAME=`hostname`
 export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
-export ORACLE_SID="PRDSTBYDB"
+export ORACLE_SID="PRDRBTBEL"
 DBMODE=""
 
 ##
@@ -64,17 +64,18 @@ underline=$(tput smul)
 ###
 
 ReportError(){
+	DATE_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 	if [ "${3}" != "" ]
 		then
 			echo "" >> ${RSYNC_LOG_FILE}
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
+			echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
 			echo -e "Error during Running Script :\n$CURSCRIPT" >> ${RSYNC_LOG_FILE}
 			echo -e "$1: $2" >> ${RSYNC_LOG_FILE}
 			echo "########################################################" >> ${RSYNC_LOG_FILE}
 			echo "" >> ${RSYNC_LOG_FILE}
 			exit 1;
 	else
-			echo "########################################################"
+			echo "############### ${DATE_TIME} ####################"
 			echo "Error during Running Script : $CURSCRIPT"
 			echo -e "$1: $2"
 			echo "########################################################"
@@ -89,16 +90,17 @@ ReportError(){
 ###
 
 ReportInfo(){
+	DATE_TIME=$(date '+%Y-%m-%d %H:%M:%S')
 	if [ "${2}" != "" ]
 		then
 			echo "" >> ${RSYNC_LOG_FILE}
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
+			echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
 			echo -e "Information by the script :\n$CURSCRIPT\n" >> ${RSYNC_LOG_FILE}
 			echo -e "INFO : $1 " >> ${RSYNC_LOG_FILE}
 			echo "########################################################" >> ${RSYNC_LOG_FILE}
 			echo "" >> ${RSYNC_LOG_FILE}
 	else 
-			echo "########################################################"
+			echo "############### ${DATE_TIME} ####################"
 			echo "Information by the script : $CURSCRIPT"
 			echo -e "INFO : $1 "
 			echo "########################################################"
