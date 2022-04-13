@@ -20,7 +20,7 @@
 ##
 export ORACLE_HOSTNAME=`hostname`
 export ORACLE_HOME=/u01/app/oracle/product/19.0.0/dbhome_1
-export ORACLE_SID="PRDRBTBEL"
+#export ORACLE_SID="PRDSTBY"
 DBMODE=""
 
 ##
@@ -39,7 +39,7 @@ CURSCRIPT=`readlink -f $0`
 ##
 RECOVERY_LOG_DIR="/ub01/standbySync/log/"
 RECOVERY_ARCH_DIR="/ub01/standbySync/archives/"
-RSYNC_LOG_FILE=${RECOVERY_LOG_DIR}/alertRECOVER_${ORACLE_SID}.log
+RSYNC_LOG_FILE=${RECOVERY_LOG_DIR}/alertRECOVER.log
 RSYNC_START_TIME=""
 RSYNC_END_TIME=""
 
