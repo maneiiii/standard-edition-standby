@@ -43,20 +43,21 @@ underline=$(tput smul)
 ###
 
 ReportError(){
-	if [ "${3}" != "" ]
-		then
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
-			echo "Error during Running Script : $CURSCRIPT" >> ${RSYNC_LOG_FILE}
-			echo -e "$1: $2" >> ${RSYNC_LOG_FILE}
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
-			exit 1;
-	else
-			echo "########################################################"
-			echo "Error during Running Script : $CURSCRIPT"
-			echo -e "$1: $2"
-			echo "########################################################"
-			exit 1;
-	fi
+        DATE_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+        if [ "${3}" != "" ]
+                then
+                        echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
+                        echo "Error during Running Script : $CURSCRIPT" >> ${RSYNC_LOG_FILE}
+                        echo -e "$1: $2" >> ${RSYNC_LOG_FILE}
+                        echo "########################################################" >> ${RSYNC_LOG_FILE}
+                        exit 1;
+        else
+                        echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
+                        echo "Error during Running Script : $CURSCRIPT"
+                        echo -e "$1: $2"
+                        echo "########################################################"
+                        exit 1;
+        fi
 }
 
 ###
@@ -66,21 +67,23 @@ ReportError(){
 ###
 
 ReportInfo(){
-	if [ "${2}" != "" ]
-		then
-			echo "" >> ${RSYNC_LOG_FILE}
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
-			echo -e "Information by the script :\n$CURSCRIPT\n" >> ${RSYNC_LOG_FILE}
-			echo -e "INFO : $1 " >> ${RSYNC_LOG_FILE}
-			echo "########################################################" >> ${RSYNC_LOG_FILE}
-			echo "" >> ${RSYNC_LOG_FILE}
-	else 
-			echo "########################################################"
-			echo "Information by the script : $CURSCRIPT"
-			echo -e "INFO : $1 "
-			echo "########################################################"
-	fi
+        DATE_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+        if [ "${2}" != "" ]
+                then
+                        echo "" >> ${RSYNC_LOG_FILE}
+                        echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
+                        echo -e "Information by the script :\n$CURSCRIPT\n" >> ${RSYNC_LOG_FILE}
+                        echo -e "INFO : $1 " >> ${RSYNC_LOG_FILE}
+                        echo "########################################################" >> ${RSYNC_LOG_FILE}
+                        echo "" >> ${RSYNC_LOG_FILE}
+        else
+                        echo "############### ${DATE_TIME} ####################" >> ${RSYNC_LOG_FILE}
+                        echo "Information by the script : $CURSCRIPT"
+                        echo -e "INFO : $1 "
+                        echo "########################################################"
+        fi
 }
+
 
 
 ###
