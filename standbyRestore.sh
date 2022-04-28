@@ -335,7 +335,7 @@ END
 FunCreateSpfile(){
 ReportInfo "${2}" "Y"
 ${1}/bin/sqlplus -s / as sysdba <<EOF >> ${RESTORE_LOG_FILE}
-create spfile='+DATA/PRDRBTBEL/spfilePRDRBTBEL.ora' from pfile='/u01/app/oracle/product/19.0.0/dbhome_1/dbs/initPRDRBTBEL.ora.dup';
+create spfile='+DATA/${ORACLE_SID}/spfile${ORACLE_SID}.ora' from pfile='${ORACLE_HOME}/dbs/init${ORACLE_SID}.ora.dup';
 exit;
 EOF
 }
